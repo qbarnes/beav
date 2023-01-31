@@ -509,9 +509,7 @@ screen_rows (f, n, k)
     int new_rows;
     register int s;
     char buf[80];
-    WINDOW *wp, *cur_wp_sav;
-
-    cur_wp_sav = curwp;
+    WINDOW *wp;
 
     new_rows = nrow;		/* default it if sscanf reads nothing */
     sprintf (buf, "%s [%d] ", MSG_scrn_rows, nrow);

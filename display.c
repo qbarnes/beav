@@ -842,9 +842,7 @@ update ()
     register VIDEO *vp1;
     register VIDEO *vp2;
     register uint i;
-    register int hflag;
 
-    hflag = FALSE;		/* Not hard.			*/
     wp = wheadp;
     while (wp != NULL)
     {
@@ -890,7 +888,6 @@ update ()
 	    }
 	    else if ((wp->w_flag & (WFEDIT | WFHARD)) != 0)
 	    {
-		hflag = TRUE;
 		i = wp->w_toprow;
 		while (i < wp->w_toprow + wp->w_ntrows)
 		{
