@@ -8,9 +8,6 @@
 #include		<string.h>
 #include		"def.h"
 
-void keyadd ();
-void keydup ();
-
 
 extern char MSG_byte_shift[];
 extern char MSG_back_char[];

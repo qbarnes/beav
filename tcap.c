@@ -39,15 +39,10 @@ extern int tcapbcol ();
 char tcapbuf[TCAPSLEN];
 char *UP, PC, *CM, *CE, *CL, *SO, *SE, *TI, *TE;	/* DR */
 
-#ifdef linux
-#include <asm/termios.h>
-struct winsize ttysize;
-#endif
-
-#ifdef BSD
+#if defined(BSD) || defined(linux)
 #include <sys/ioctl.h>
 struct winsize ttysize;
-#endif /* BSD */
+#endif /* BSD or linux */
 #ifdef ULTRIX
 struct winsize ttysize;
 #endif

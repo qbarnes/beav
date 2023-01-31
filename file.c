@@ -7,13 +7,6 @@
 #include	<sys/stat.h>
 #include        "def.h"
 
-char load_file ();
-char readin ();
-void makename ();
-bool writeout ();
-bool parse_f_name ();
-A32 ffseek ();
-A32 file_len ();
 
 extern char MSG_rd_file[];
 extern char MSG_trash[];

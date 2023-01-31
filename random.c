@@ -9,12 +9,6 @@
 #include    <string.h>
 #include    "def.h"
 
-char backdel ();
-bool fill_out ();
-void bad_key ();
-F32 get_float ();
-D64 get_double ();
-
 
 extern char MSG_sh_pos[];
 extern char MSG_sh_pos1[];
@@ -73,9 +67,6 @@ extern bool read_pat_mode;
 extern bool dont_repeat;
 extern BUFFER sav_buf;
 
-char dec_chr_ok ();
-ulong get_long ();
-void wind_on_dot_all ();
 
 /*
 * Display a bunch of useful information about

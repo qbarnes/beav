@@ -9,11 +9,6 @@
 
 #include    "def.h"
 
-bool move_ptr ();
-bool forwchar ();
-bool wind_on_dot ();
-bool backline ();
-
 extern char MSG_mark_set[];
 extern char MSG_no_mark[];
 extern char MSG_go_b_n[];
