@@ -1,6 +1,6 @@
 # This is the makefile for BSD UNIX
 #CFLAGS=     -g -DUNIX
-CFLAGS=     -g -DUNIX -Wall
+CFLAGS=     -g -DUNIX -Wall -Wno-pointer-sign
 CC=gcc
 
 OFILES=		basic.o ebcdic.o fileio.o region.o text.o wangpc.o \
