@@ -36,6 +36,11 @@ extern int tcapbcol ();
 char tcapbuf[TCAPSLEN];
 char *UP, PC, *CM, *CE, *CL, *SO, *SE, *TI, *TE;	/* DR */
 
+#ifdef linux
+#include <termios.h>
+struct winsize ttysize;
+#endif
+
 #ifdef BSD
 #include <sys/ioctl.h>
 struct winsize ttysize;
@@ -84,6 +89,14 @@ tcapopen ()
 	exit (1);
     }
 
+#ifdef linux
+    if (ioctl (0, TIOCGWINSZ, &ttysize) == 0
+        && ttysize.ws_row > 0) {
+            nrow = ttysize.ws_row;
+            ncol = ttysize.ws_col;
+    }
+    else
+#endif
 
 #ifdef BSD
 #ifdef ULTRIX
@@ -110,7 +123,7 @@ tcapopen ()
 	ttclose ();		/* fix in 1.13 */
 	exit (1);
     }
-    printf ("nrow %d, ncol %d\n", nrow, ncol);
+    /* printf ("nrow %d, ncol %d\n", nrow, ncol); */
 
     if ((ncol = (short) tgetnum ("co")) == -1)
     {

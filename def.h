@@ -560,9 +560,14 @@ extern char file_off_bad;
 /*
  * Standard I/O.
  */
+#ifndef linux
 extern char *malloc ();
 extern char *strcpy ();
 extern char *strcat ();
+#else
+#include <stdio.h>
+#include <string.h>
+#endif
 
 #ifndef NOPROTO
 #include "prototyp.h"

@@ -55,9 +55,11 @@ extern void vteeol (void);
 extern void update (void);
 extern unsigned int get_currow (struct WINDOW *wp);
 extern unsigned int get_curcol (struct WINDOW *wp);
+#ifndef linux
 extern void mem_line (int row, struct vid *vvp);
 extern void ucopy (struct vid *vvp, struct vid *pvp);
 extern void uline (int row, struct vid *vvp, struct vid *pvp);
+#endif
 extern void modeline (struct WINDOW *wp);
 extern void writ_echo (char *buf);
 extern char print (void);
@@ -203,7 +205,9 @@ extern int getkbd (void);
 extern void ttykeymapinit (void);
 extern char *keystrings (int key);
 extern void is_wang (void);
+#ifndef linux
 extern int getsysconfig (union REGS *outregs, struct SREGS *segregs);
+#endif
 extern char getscreenstate (void);
 extern char reposition (void);
 extern char nextwind (void);
