@@ -1,0 +1,9 @@
+*~
+*.rej
+*.orig
+*.log
+*.out
+*.o
+*.obj
+beav
+beav.exe
