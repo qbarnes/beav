@@ -346,12 +346,11 @@ flush_all ()
     register BUFFER *bp, *savbp = curbp;
 
     for (bp = bheadp; bp != NULL; bp = bp->b_bufp)
-	if (bp->b_fname != NULL)
-	{
-	    curbp = bp;		/* jam */
-	    filesave ();
-	    update ();
-	}
+    {
+	curbp = bp;		/* jam */
+	filesave ();
+	update ();
+    }
     flush_count = 0;
     writ_echo (okmsg);
     curbp = savbp;
