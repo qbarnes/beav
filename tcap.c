@@ -37,7 +37,7 @@ char tcapbuf[TCAPSLEN];
 char *UP, PC, *CM, *CE, *CL, *SO, *SE, *TI, *TE;	/* DR */
 
 #ifdef linux
-#include <termios.h>
+#include <asm/termios.h>
 struct winsize ttysize;
 #endif
 
