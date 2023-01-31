@@ -402,7 +402,7 @@ check_extend (sfname)
 			(*sp->s_funcp) (TRUE, keyval, KRANDOM);
 		    else
 		    {
-			char temp_b[40];
+			char temp_b[68];
 
 			sprintf (temp_b, "%s %s", MSG_unk_rc, keybind);
 			writ_echo (temp_b);
