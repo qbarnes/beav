@@ -9,11 +9,13 @@
  * The most common reason to edit this file would be to zap
  * the definition of CVMVAS or BACKUP.
  */
+#ifndef DEF_DEF
+#define DEF_DEF
 #define LINT_ARGS   1		/* enable lint type checking */
-#include        "stdio.h"
+#include        <stdio.h>
 
 #ifdef UNIX
-#include        "sys/types.h"
+#include        <sys/types.h>
 #endif /* UNIX */
 
 #define BACKUP  1		/* Make backup file.            */
@@ -39,6 +41,7 @@
 #define     D8  uchar		/* this had better be a 8 bit quantity */
 #define     D16 ushort		/* this had better be a 16 bit quantity */
 #define     D32 ulong		/* this had better be a 32 bit quantity */
+#define     F32 float           /* this had better be a 32 bit quantity */
 #define     D64 double		/* this had better be a 64 bit quantity */
 
 /* this define is reserved for the address of a location in the buffer */
@@ -131,9 +134,9 @@
  * Table sizes, etc.
  */
 #define NSHASH  31		/* Symbol table hash size.      */
-#define NFILEN  256		/* Length, file name.           */
-#define NBUFN   13		/* Length, buffer name.     */
-#define NFILE   12          /* Length, file name.  */	/* krw */
+#define NFILEN  4096		/* Length, file name.           */
+#define NBUFN   4097		/* Length, buffer name.     */
+#define NFILE   4096          /* Length, file name.  */	/* krw */
 #define NKBDM   256		/* Length, keyboard macro.      */
 #define NMSG    512		/* Length, message buffer.      */
 #define NPAT    80		/* Length, pattern.             */
@@ -269,9 +272,9 @@
 #define _L      0x04		/* Lower case letter.           */
 #define _C      0x08		/* Control.                     */
 
-#define ISCTRL(c)       ((cinfo[(c)]&_C)!=0)
-#define ISUPPER(c)      ((cinfo[(c)]&_U)!=0)
-#define ISLOWER(c)      ((cinfo[(c)]&_L)!=0)
+#define ISCTRL(c)       ((cinfo[(int)(c)]&_C)!=0)
+#define ISUPPER(c)      ((cinfo[(int)(c)]&_U)!=0)
+#define ISLOWER(c)      ((cinfo[(int)(c)]&_L)!=0)
 #define TOUPPER(c)      ((c)-0x20)
 #define TOLOWER(c)      ((c)+0x20)
 
@@ -294,6 +297,9 @@
 #define R_POS_FMT(wp)	(wp -> w_fmt_ptr -> r_pos_fmt)
 #define R_BYTE_FMT(wp)	(wp -> w_fmt_ptr -> r_byte_fmt)
 #define R_POSITIONS(wp) (wp -> w_fmt_ptr -> r_positions)
+
+struct vid;
+
 
 /*
  * The symbol table links editing functions
@@ -572,3 +578,4 @@ extern char *strcat ();
 #ifndef NOPROTO
 #include "prototyp.h"
 #endif /* NOPROTO */
+#endif

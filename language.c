@@ -258,6 +258,7 @@ char MSG_show_save_buf[] = "show-save-buf";
 char MSG_unit_size1[] = "display-bytes";
 char MSG_unit_size2[] = "display-words";
 char MSG_unit_size4[] = "display-double-words";
+char MSG_unit_size8[] = "display-quad-words";
 char MSG_reposition_window[] = "window-reposition";
 char MSG_set_mark[] = "mark-set";
 char MSG_goto_eob[] = "move-to-end";

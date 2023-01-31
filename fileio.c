@@ -3,6 +3,7 @@
 */
 
 #ifdef UNIX
+#include	<unistd.h>
 #include	<sys/types.h>
 #include	<fcntl.h>
 #include	<sys/stat.h>
@@ -249,9 +250,9 @@ bool
 fbackupfile (fname)
     char *fname;
 {
-    char backname[NFILEN];
-    char *source, *backup;
-    char buf[NCOL];
+    unsigned char backname[NFILEN];
+    unsigned char *source, *backup;
+    unsigned char buf[NCOL];
 
     source = fname;
     backup = backname;

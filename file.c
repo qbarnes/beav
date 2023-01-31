@@ -1,6 +1,7 @@
 /*
 *  File commands.
 */
+#include	<string.h>
 #include	<sys/types.h>
 #include	<fcntl.h>
 #include	<sys/stat.h>
@@ -329,7 +330,10 @@ readin (fname, start, end)
     bp->b_flag &= ~BFCHG;	/* No change.           */
 #endif
     if ((start == 0L) && (end == MAXPOS))
-	strcpy (bp->b_fname, fname);
+    {
+	strncpy (bp->b_fname, fname, NFILEN);
+	bp->b_fname[NFILEN - 1] = '\0';
+    }
     else
 	strcpy (bp->b_fname, MSG_null);
     bp->b_file_size = 0;
@@ -337,7 +341,7 @@ readin (fname, start, end)
     if ((s = ffropen (fname)) == FIOERR || s == FIOFNF)	/* jam */
 	goto out;
     bp->b_file_size = file_len ();	/* get the file lenth */
-    sprintf (buf, MSG_reading, fname);	/* jam */
+    snprintf (buf, NCOL, MSG_reading, fname);	/* jam */
     writ_echo (buf);
     temp = ffseek (start);
     if (temp != start)

@@ -18,6 +18,7 @@
 * nonsense.
 */
 
+#include    <stdlib.h>
 #include    "def.h"
 
 void l_fix_up ();

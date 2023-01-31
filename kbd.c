@@ -1,6 +1,7 @@
 /*                      KBD.C
 *       Terminal independent keyboard handling.
 */
+#include    <string.h>
 #include    "def.h"
 
 char *keystrings ();

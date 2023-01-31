@@ -4,6 +4,8 @@
 * The terminal specific parts of building the
 * keymap has been moved to a better place.
 */
+#include		<stdlib.h>
+#include		<string.h>
 #include		"def.h"
 
 void keyadd ();
@@ -78,6 +80,7 @@ extern char MSG_display_version[];
 extern char MSG_unit_size1[];
 extern char MSG_unit_size2[];
 extern char MSG_unit_size4[];
+extern char MSG_unit_size8[];
 extern char MSG_reposition_window[];
 extern char MSG_set_mark[];
 extern char MSG_goto_eob[];
@@ -200,6 +203,7 @@ extern char binarymode ();	/* display BINARY data   */
 extern char dispsize1 ();	/* display in BYTE format */
 extern char dispsize2 ();	/* display in WORD format */
 extern char dispsize4 ();	/* display in DWORD format*/
+extern char dispsize8 ();	/* display in DOUBLE format*/
 extern char dispswapbyte ();	/* Display swaped bytes	pvr   */
 extern char yank ();		/* Yank back from killbuffer.   */
 extern char linkwind ();	/* Link all windows on one buffer. */
@@ -275,105 +279,106 @@ typedef struct
 */
 KEY key[] =
 {
-    KCTRL | 'A', dispshift, MSG_byte_shift, 0,
-    KCTRL | 'B', backchar, MSG_back_char, SSRCH | SRPLC,
-    KCTRL | 'C', quit, MSG_quit, 0,	/* pvr */
-    KCTRL | 'D', forwdel, MSG_forw_del_char, SMOD | SSIZE | SSRCH | SRPLC,
-    KCTRL | 'E', dispswapbyte, MSG_toggle_swap, SSRCH | SRPLC,	/* pvr */
-    KCTRL | 'F', forwchar, MSG_forw_char, SSRCH | SRPLC,
-    KCTRL | 'G', ctrlg, MSG_abort, SSRCH | SRPLC,
-    KCTRL | 'I', selfinsert, MSG_ins_self, SMOD | SSRCH | SRPLC,
-    KCTRL | 'H', backdel, MSG_back_del_char, SMOD | SSIZE | SSRCH | SRPLC,
-    KCTRL | 'L', refresh, MSG_refresh, SSRCH | SRPLC,
-    KCTRL | 'N', forwline, MSG_forw_line, SSRCH | SRPLC,
-    KCTRL | 'P', backline, MSG_back_line, SSRCH | SRPLC,
-    KCTRL | 'Q', quote, MSG_quote, 0,
-    KCTRL | 'R', recall, MSG_recall, SSRCH | SRPLC,
-    KCTRL | 'T', twiddle, MSG_twiddle, SMOD | SSRCH | SRPLC,
-    KCTRL | 'V', forwpage, MSG_forw_page, SRPLC,
-    KCTRL | 'W', killregion, MSG_kill_region, SMOD | SSIZE,
-    KCTRL | 'Y', yank, MSG_yank, SMOD | SSIZE,
-    KCTRL | 'Z', mvdnwind, MSG_down_window, 0,	/* fitz */
-    KCTLX | KCTRL | 'A', insert_toggle, MSG_ins_toggle, SSRCH | SRPLC,
-    KCTLX | KCTRL | 'B', listbuffers, MSG_display_buffers, 0,
-    KCTLX | KCTRL | 'C', quit, MSG_quit, 0,
-    KCTLX | KCTRL | 'E', flushnquit, MSG_exit_flush_all, 0,	/* fitz */
-    KCTLX | KCTRL | 'F', filename, MSG_set_file_name, SMOD,	/* jam */
-    KCTLX | KCTRL | 'I', fileinsert, MSG_file_insert, SMOD | SSIZE,
-    KCTLX | KCTRL | 'L', bufsizlock, MSG_buf_size_lock, 0,
-    KCTLX | KCTRL | 'M', flush_all, MSG_flush_all, 0,
-    KCTLX | KCTRL | 'N', mvdnwind, MSG_down_window, 0,
-    KCTLX | KCTRL | 'P', mvupwind, MSG_up_window, 0,
-    KCTLX | KCTRL | 'R', fileread, MSG_file_read, 0,
-    KCTLX | KCTRL | 'S', filesave, MSG_file_save, 0,
-    KCTLX | KCTRL | 'V', filevisit, MSG_file_visit, 0,
-    KCTLX | KCTRL | 'W', filewrite, MSG_file_write, 0,
-    KCTLX | KCTRL | 'X', swapmark, MSG_swap_dot_and_mark, 0,
-    KCTLX | KCTRL | 'Z', shrinkwind, MSG_shrink_window, 0,
-    KCTLX | '=', showcpos, MSG_display_position, 0,
-    KCTLX | '(', ctlxlp, MSG_start_macro, 0,
-    KCTLX | ')', ctlxrp, MSG_end_macro, 0,
-    KCTLX | '?', help, MSG_help, 0,
-    KCTLX | '0', delwind, MSG_del_window, 0,
-    KCTLX | '1', onlywind, MSG_only_window, 0,
-    KCTLX | '2', splitwind, MSG_split_window, 0,
-    KCTLX | 'B', usebuffer, MSG_use_buffer, 0,
-    KCTLX | 'C', spawncli, MSG_spawn_cli, 0,	/* fitz */
-    KCTLX | 'E', ctlxe, MSG_execute_macro, 0,
-    KCTLX | 'G', gotoline, MSG_goto_line, 0,
-    KCTLX | 'I', insertunit, MSG_ins_unit, SMOD | SSIZE | SSRCH | SRPLC,
-    KCTLX | 'K', killbuffer, MSG_kill_buffer, 0,
-    KCTLX | 'L', load_extend, MSG_load_bindings, 0,
-    KCTLX | 'N', nextwind, MSG_forw_window, 0,
-    KCTLX | 'P', prevwind, MSG_back_window, 0,
-    KCTLX | 'V', viewfile, MSG_view_file, 0,	/* jam */
-    KCTLX | 'Z', enlargewind, MSG_enlarge_window, 0,
-    KMETA | KCTRL | 'A', asciimode, MSG_ascii_mode, SSRCH | SRPLC,	/* pvr */
-    KMETA | KCTRL | 'B', binarymode, MSG_binary_mode, SSRCH | SRPLC,	/* pvr */
-    KMETA | KCTRL | 'D', decimalmode, MSG_decimal_mode, SSRCH | SRPLC,	/* pvr */
-    KMETA | KCTRL | 'E', ebcdicmode, MSG_ebcdic_mode, SSRCH | SRPLC,	/* pvr */
+    { KCTRL | 'A', dispshift, MSG_byte_shift, 0 },
+    { KCTRL | 'B', backchar, MSG_back_char, SSRCH | SRPLC },
+    { KCTRL | 'C', quit, MSG_quit, 0 },	/* pvr */
+    { KCTRL | 'D', forwdel, MSG_forw_del_char, SMOD | SSIZE | SSRCH | SRPLC },
+    { KCTRL | 'E', dispswapbyte, MSG_toggle_swap, SSRCH | SRPLC },	/* pvr */
+    { KCTRL | 'F', forwchar, MSG_forw_char, SSRCH | SRPLC },
+    { KCTRL | 'G', ctrlg, MSG_abort, SSRCH | SRPLC },
+    { KCTRL | 'I', selfinsert, MSG_ins_self, SMOD | SSRCH | SRPLC },
+    { KCTRL | 'H', backdel, MSG_back_del_char, SMOD | SSIZE | SSRCH | SRPLC },
+    { KCTRL | 'L', refresh, MSG_refresh, SSRCH | SRPLC },
+    { KCTRL | 'N', forwline, MSG_forw_line, SSRCH | SRPLC },
+    { KCTRL | 'P', backline, MSG_back_line, SSRCH | SRPLC },
+    { KCTRL | 'Q', quote, MSG_quote, 0 },
+    { KCTRL | 'R', recall, MSG_recall, SSRCH | SRPLC },
+    { KCTRL | 'T', twiddle, MSG_twiddle, SMOD | SSRCH | SRPLC },
+    { KCTRL | 'V', forwpage, MSG_forw_page, SRPLC },
+    { KCTRL | 'W', killregion, MSG_kill_region, SMOD | SSIZE },
+    { KCTRL | 'Y', yank, MSG_yank, SMOD | SSIZE },
+    { KCTRL | 'Z', mvdnwind, MSG_down_window, 0 },	/* fitz */
+    { KCTLX | KCTRL | 'A', insert_toggle, MSG_ins_toggle, SSRCH | SRPLC },
+    { KCTLX | KCTRL | 'B', listbuffers, MSG_display_buffers, 0 },
+    { KCTLX | KCTRL | 'C', quit, MSG_quit, 0 },
+    { KCTLX | KCTRL | 'E', flushnquit, MSG_exit_flush_all, 0 },	/* fitz */
+    { KCTLX | KCTRL | 'F', filename, MSG_set_file_name, SMOD },	/* jam */
+    { KCTLX | KCTRL | 'I', fileinsert, MSG_file_insert, SMOD | SSIZE },
+    { KCTLX | KCTRL | 'L', bufsizlock, MSG_buf_size_lock, 0 },
+    { KCTLX | KCTRL | 'M', flush_all, MSG_flush_all, 0 },
+    { KCTLX | KCTRL | 'N', mvdnwind, MSG_down_window, 0 },
+    { KCTLX | KCTRL | 'P', mvupwind, MSG_up_window, 0 },
+    { KCTLX | KCTRL | 'R', fileread, MSG_file_read, 0 },
+    { KCTLX | KCTRL | 'S', filesave, MSG_file_save, 0 },
+    { KCTLX | KCTRL | 'V', filevisit, MSG_file_visit, 0 },
+    { KCTLX | KCTRL | 'W', filewrite, MSG_file_write, 0 },
+    { KCTLX | KCTRL | 'X', swapmark, MSG_swap_dot_and_mark, 0 },
+    { KCTLX | KCTRL | 'Z', shrinkwind, MSG_shrink_window, 0 },
+    { KCTLX | '=', showcpos, MSG_display_position, 0 },
+    { KCTLX | '(', ctlxlp, MSG_start_macro, 0 },
+    { KCTLX | ')', ctlxrp, MSG_end_macro, 0 },
+    { KCTLX | '?', help, MSG_help, 0 },
+    { KCTLX | '0', delwind, MSG_del_window, 0 },
+    { KCTLX | '1', onlywind, MSG_only_window, 0 },
+    { KCTLX | '2', splitwind, MSG_split_window, 0 },
+    { KCTLX | 'B', usebuffer, MSG_use_buffer, 0 },
+    { KCTLX | 'C', spawncli, MSG_spawn_cli, 0 },	/* fitz */
+    { KCTLX | 'E', ctlxe, MSG_execute_macro, 0 },
+    { KCTLX | 'G', gotoline, MSG_goto_line, 0 },
+    { KCTLX | 'I', insertunit, MSG_ins_unit, SMOD | SSIZE | SSRCH | SRPLC },
+    { KCTLX | 'K', killbuffer, MSG_kill_buffer, 0 },
+    { KCTLX | 'L', load_extend, MSG_load_bindings, 0 },
+    { KCTLX | 'N', nextwind, MSG_forw_window, 0 },
+    { KCTLX | 'P', prevwind, MSG_back_window, 0 },
+    { KCTLX | 'V', viewfile, MSG_view_file, 0 },	/* jam */
+    { KCTLX | 'Z', enlargewind, MSG_enlarge_window, 0 },
+    { KMETA | KCTRL | 'A', asciimode, MSG_ascii_mode, SSRCH | SRPLC },	/* pvr */
+    { KMETA | KCTRL | 'B', binarymode, MSG_binary_mode, SSRCH | SRPLC },	/* pvr */
+    { KMETA | KCTRL | 'D', decimalmode, MSG_decimal_mode, SSRCH | SRPLC },	/* pvr */
+    { KMETA | KCTRL | 'E', ebcdicmode, MSG_ebcdic_mode, SSRCH | SRPLC },	/* pvr */
 #if	FLOAT_DISP
-    KMETA | KCTRL | 'F', floatmode, MSG_float_mode, SSRCH | SRPLC,	/* pvr */
+    { KMETA | KCTRL | 'F', floatmode, MSG_float_mode, SSRCH | SRPLC },	/* pvr */
 #endif
-    KMETA | KCTRL | 'H', hexmode, MSG_hex_mode, SSRCH | SRPLC,	/* pvr */
-    KMETA | KCTRL | 'K', delbunit, MSG_back_del_unit, SMOD | SSIZE | SSRCH | SRPLC,
-    KMETA | KCTRL | 'N', buffername, MSG_buffer_name, 0,
-    KMETA | KCTRL | 'O', octalmode, MSG_octal_mode, SSRCH | SRPLC,	/* pvr */
-    KMETA | KCTRL | 'P', n_way_combine, MSG_n_combine, SSIZE | SMOD,	/* pvr */
-    KMETA | KCTRL | 'R', screen_rows, MSG_scr_row, 0,	/* pvr */
-    KMETA | KCTRL | 'S', n_way_split, MSG_n_split, 0,	/* pvr */
-    KMETA | KCTRL | 'V', showversion, MSG_display_version, 0,
-    KMETA | KCTRL | 'W', showsavebuf, MSG_show_save_buf, 0,
-    KMETA | '1', dispsize1, MSG_unit_size1, SSRCH | SRPLC,	/* pvr */
-    KMETA | '2', dispsize2, MSG_unit_size2, SSRCH | SRPLC,	/* pvr */
-    KMETA | '4', dispsize4, MSG_unit_size4, SSRCH | SRPLC,	/* pvr */
-    KMETA | '!', reposition, MSG_reposition_window, 0,
-    KMETA | '.', setmark, MSG_set_mark, 0,
-    KMETA | '>', gotoeob, MSG_goto_eob, SSRCH | SRPLC,
-    KMETA | '<', gotobob, MSG_goto_bob, SSRCH | SRPLC,
-    KMETA | '+', next_buf, MSG_next_buff, 0,
-    KMETA | '-', prev_buf, MSG_prev_buff, 0,
-    KMETA | '%', queryrepl, MSG_query_replace, SMOD,
-    KMETA | '?', wallchart, MSG_display_bindings, 0,
-    KMETA | 'A', autosave, MSG_auto_save, 0,
-    KMETA | 'B', backunit, MSG_back_unit, SSRCH | SRPLC,
-    KMETA | 'C', compare, MSG_compare, 0,
-    KMETA | 'D', delfunit, MSG_forw_del_unit, SMOD | SSIZE | SSRCH | SRPLC,
-    KMETA | 'F', forwunit, MSG_forw_unit, SSRCH | SRPLC,
-    KMETA | 'G', use_buffer, MSG_use_buffer_split, 0,
-    KMETA | 'K', bindtokey, MSG_bind_to_key, 0,
-    KMETA | 'L', linkwind, MSG_link_windows, 0,
-    KMETA | 'O', save_region, MSG_save_region, 0,
-    KMETA | 'P', print, MSG_print, 0,
-    KMETA | 'R', backsearch, MSG_back_search, 0,
-    KMETA | 'S', forwsearch, MSG_forw_search, 0,
-    KMETA | 'T', searchagain, MSG_search_again, 0,
-    KMETA | 'U', file_visit, MSG_file_visit_split, 0,
-    KMETA | 'V', backpage, MSG_back_page, SRPLC,
-    KMETA | 'W', copyregion, MSG_copy_region, 0,
-    KMETA | 'X', extend, MSG_extended_command, 0,
-    KMETA | 'Y', yank_buffer, MSG_yank_buffer, SMOD | SSIZE,
-    KMETA | 'Z', mvupwind, MSG_up_window, 0
+    { KMETA | KCTRL | 'H', hexmode, MSG_hex_mode, SSRCH | SRPLC },	/* pvr */
+    { KMETA | KCTRL | 'K', delbunit, MSG_back_del_unit, SMOD | SSIZE | SSRCH | SRPLC },
+    { KMETA | KCTRL | 'N', buffername, MSG_buffer_name, 0 },
+    { KMETA | KCTRL | 'O', octalmode, MSG_octal_mode, SSRCH | SRPLC },	/* pvr */
+    { KMETA | KCTRL | 'P', n_way_combine, MSG_n_combine, SSIZE | SMOD },	/* pvr */
+    { KMETA | KCTRL | 'R', screen_rows, MSG_scr_row, 0 },	/* pvr */
+    { KMETA | KCTRL | 'S', n_way_split, MSG_n_split, 0 },	/* pvr */
+    { KMETA | KCTRL | 'V', showversion, MSG_display_version, 0 },
+    { KMETA | KCTRL | 'W', showsavebuf, MSG_show_save_buf, 0 },
+    { KMETA | '1', dispsize1, MSG_unit_size1, SSRCH | SRPLC },	/* pvr */
+    { KMETA | '2', dispsize2, MSG_unit_size2, SSRCH | SRPLC },	/* pvr */
+    { KMETA | '4', dispsize4, MSG_unit_size4, SSRCH | SRPLC },	/* pvr */
+    { KMETA | '8', dispsize8, MSG_unit_size8, SSRCH | SRPLC },	/* pvr */
+    { KMETA | '!', reposition, MSG_reposition_window, 0 },
+    { KMETA | '.', setmark, MSG_set_mark, 0 },
+    { KMETA | '>', gotoeob, MSG_goto_eob, SSRCH | SRPLC },
+    { KMETA | '<', gotobob, MSG_goto_bob, SSRCH | SRPLC },
+    { KMETA | '+', next_buf, MSG_next_buff, 0 },
+    { KMETA | '-', prev_buf, MSG_prev_buff, 0 },
+    { KMETA | '%', queryrepl, MSG_query_replace, SMOD },
+    { KMETA | '?', wallchart, MSG_display_bindings, 0 },
+    { KMETA | 'A', autosave, MSG_auto_save, 0 },
+    { KMETA | 'B', backunit, MSG_back_unit, SSRCH | SRPLC },
+    { KMETA | 'C', compare, MSG_compare, 0 },
+    { KMETA | 'D', delfunit, MSG_forw_del_unit, SMOD | SSIZE | SSRCH | SRPLC },
+    { KMETA | 'F', forwunit, MSG_forw_unit, SSRCH | SRPLC },
+    { KMETA | 'G', use_buffer, MSG_use_buffer_split, 0 },
+    { KMETA | 'K', bindtokey, MSG_bind_to_key, 0 },
+    { KMETA | 'L', linkwind, MSG_link_windows, 0 },
+    { KMETA | 'O', save_region, MSG_save_region, 0 },
+    { KMETA | 'P', print, MSG_print, 0 },
+    { KMETA | 'R', backsearch, MSG_back_search, 0 },
+    { KMETA | 'S', forwsearch, MSG_forw_search, 0 },
+    { KMETA | 'T', searchagain, MSG_search_again, 0 },
+    { KMETA | 'U', file_visit, MSG_file_visit_split, 0 },
+    { KMETA | 'V', backpage, MSG_back_page, SRPLC },
+    { KMETA | 'W', copyregion, MSG_copy_region, 0 },
+    { KMETA | 'X', extend, MSG_extended_command, 0 },
+    { KMETA | 'Y', yank_buffer, MSG_yank_buffer, SMOD | SSIZE },
+    { KMETA | 'Z', mvupwind, MSG_up_window, 0 }
 };
 
 #define NKEY	(sizeof(key) / sizeof(key[0]))

@@ -8,6 +8,8 @@
 
 #ifdef UNIX			/* System V */
 
+#include    <unistd.h>
+#include    <errno.h>
 #include    <stdio.h>
 #include    <signal.h>
 #ifdef BSD
@@ -26,7 +28,11 @@
 #include    <sgtty.h>
 #define O_NDELAY O_NONBLOCK
 #else
-#include    <termio.h>
+#ifdef __GLIBC__
+#include <termios.h>
+#else 
+#include <termio.h>
+#endif /* __GLIBC__ */
 #endif /* MINIX */
 #endif /* OS2 */
 #endif /* BSD */
@@ -52,14 +58,20 @@ struct sgttyb otermio;		/* original terminal characteristics */
 struct sgttyb ntermio;		/* charactoristics to use inside */
 struct tchars tchars, tcharsorig;
 #else
+#ifdef __GLIBC__
+#include <sys/ioctl.h>
+struct termios otermio;
+struct termios ntermio;
+#else
 struct termio otermio;		/* original terminal characteristics */
 struct termio ntermio;		/* charactoristics to use inside */
+#endif /* __GLIBC__ */
 #endif /* MINIX */
 #endif /* OS2 */
 #endif /* BSD */
 
 #ifndef OS2
-extern errno;			/* System error number -- Necessary when compiling in BSD 1.13 */
+//extern errno;			/* System error number -- Necessary when compiling in BSD 1.13 */
 #endif
 
 int nrow;			/* Terminal size, rows.         */
@@ -102,7 +114,7 @@ ttopen ()
     {
 	nrow = ttysize.ts_lines;
 	ncol = ttysize.ts_cols;
-#endif
+#endif /* ULTRIX */
     }
     else
     {
@@ -125,15 +137,23 @@ ttopen ()
 	tchars.t_stopc = tchars.t_eofc = tchars.t_brkc = -1;
     ioctl (0, TIOCSETC, &tchars);
 #else
+#ifdef __GLIBC__
+    tcgetattr(0,&otermio);
+#else
     ioctl (0, TCGETA, &otermio);/* save old settings */
+    ntermio.c_line = otermio.c_line;
+#endif
     ntermio.c_iflag = 0;	/* setup new settings */
     ntermio.c_oflag = 0;
     ntermio.c_cflag = otermio.c_cflag;
     ntermio.c_lflag = 0;
-    ntermio.c_line = otermio.c_line;
     ntermio.c_cc[VMIN] = 1;
     ntermio.c_cc[VTIME] = 0;
+#ifdef __GLIBC__
+    tcsetattr(0,TCSANOW,&ntermio);
+#else
     ioctl (0, TCSETAW, &ntermio);	/* and activate them */
+#endif
 #endif /* MINIX */
     kbdflgs = fcntl (0, F_GETFL, 0);
     kbdpoll = FALSE;
@@ -166,7 +186,11 @@ ttclose ()
 	ioctl (0, TIOCSETC, &tcharsorig) == -1)
 	printf ("closing ioctl on dev 0 failure, error = %d\n", errno);
 #else
+#ifdef __GLIBC__
+    if( tcsetattr(0,TCSANOW,&otermio) == -1)
+#else
     if (ioctl (0, TCSETAW, &otermio) == -1)	/* restore terminal settings */
+#endif
 	printf ("closing ioctl on dev 0 failure, error = %d\n", errno);
 #endif /* MINIX */
     if (fcntl (0, F_SETFL, kbdflgs) == -1)
@@ -271,7 +295,7 @@ static int chr = -1;
 #endif
 #endif
 
-ttgetc ()
+int ttgetc ()
 {
 #ifdef OS2
 #ifdef __EMX__
@@ -333,7 +357,7 @@ ttgetc ()
  /* typahead():    Check to see if any characters are already in the
  keyboard buffer
 */
-ttkeyready ()
+int ttkeyready ()
 {
 #ifdef OS2
 #ifdef __EMX__

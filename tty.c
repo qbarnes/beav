@@ -16,6 +16,9 @@ void ttcolor ();
 extern void tcapopen ();
 extern void tcapclose ();	/* DR */
 extern void tcapmove ();
+extern void tcapeeop ();
+extern void tcapeeol ();
+extern void tcaprev ();
 
 #ifdef MSDOS
 #include    "dos.h"
@@ -118,8 +121,8 @@ ttmove (row, col)
 void
 tteeol ()
 {
-    char col, row, i;
 #ifdef MSDOS
+    char col, row, i;
     union REGS regs;
 
     if (ibm_pc)

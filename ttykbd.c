@@ -67,6 +67,7 @@ extern char MSG_display_version[];
 extern char MSG_unit_size1[];
 extern char MSG_unit_size2[];
 extern char MSG_unit_size4[];
+extern char MSG_unit_size8[];
 extern char MSG_reposition_window[];
 extern char MSG_set_mark[];
 extern char MSG_goto_eob[];

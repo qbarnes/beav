@@ -6,6 +6,7 @@
 * commands. Some functions are just for
 * internal use.
 */
+#include    <string.h>
 #include    "def.h"
 
 bool getregion ();

@@ -1,3 +1,8 @@
+#ifndef PROTOTYP_DEF
+#define PROTOTYP_DEF
+
+#include "def.h"
+
 extern char backchar (int f, int n, int k);
 extern char forwchar (int f, int n, int k);
 extern char move_ptr (struct WINDOW *wp, long len, char dot, char fix, char rel);
@@ -118,7 +123,7 @@ extern char ldelete (unsigned long n_bytes, int kflag);
 extern void lreplace (int n, char c);
 extern char lrepl_str (int plen, struct LINE *rstr, struct LINE *mstr);
 extern void l_fix_up (struct LINE *line);
-extern void main (int argc, char **argv);
+extern int main (int argc, char **argv);
 extern char execute (int c, int f, int n);
 extern void edinit (char *bname);
 extern char flush_all (void);
@@ -153,6 +158,7 @@ extern char backdel (int f, int n, int k);
 extern char dispsize1 (void);
 extern char dispsize2 (void);
 extern char dispsize4 (void);
+extern char dispsize8 (void);
 extern char dispswapbyte (int f, int n, int k);
 extern char yank (int f, int n, int k);
 extern char linkwind (void);
@@ -226,3 +232,5 @@ extern char backunit (int f, int n, int k);
 extern char forwunit (int f, int n, int k);
 extern char delfunit (int f, int n, int k);
 extern char delbunit (int f, int n, int k);
+
+#endif

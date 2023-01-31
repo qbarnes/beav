@@ -9,11 +9,14 @@
 * both off, the terminal is a VT52.
 */
 
+#include	<stdlib.h>
+#include	<string.h>
 #include	<sys/types.h>
 #include	<sys/stat.h>
 #include	"def.h"
 
 D64 get_double ();
+F32 get_float ();
 D32 get_long ();
 D16 get_int ();
 void writ_echo ();
@@ -23,7 +26,6 @@ uint fill_buf ();
 uint get_currow ();
 uint get_curcol ();
 #ifndef NOPROTO
-struct vid;
 void ucopy (struct vid *vvp, struct vid *pvp);
 void uline (int row, struct vid *vvp, struct vid *pvp);
 #else
@@ -40,6 +42,7 @@ extern char MSG_11lX[];
 extern char MSG_11lo[];
 extern char MSG_11ld[];
 extern char MSG_116e[];
+extern char MSG_106e[];
 extern char MSG_03o[];
 extern char MSG_06o[];
 extern char MSG_011lo[];
@@ -67,6 +70,7 @@ extern char MSG_curs_oct[];
 extern char MSG_siz_8[];
 extern char MSG_siz_16[];
 extern char MSG_siz_32[];
+extern char MSG_siz_64[];
 extern char MSG_siz_null[];
 extern char MSG_int_shift[];
 extern char MSG_mot_shift[];
@@ -169,6 +173,8 @@ vtinit ()
 	err_echo (MSG_cnt_al_w);
 	exit (1);		/* can't continue */
     }
+
+    memset(video, 0, sizeof (VIDEO) * 2 * nrow);
 
     vp = &video[0];
     for (i = 0; i < nrow; ++i)
@@ -481,6 +487,21 @@ bin_to_text (bin_buf, txt_buf, len, fmt_ptr)
 	break;
 #if	FLOAT_DISP
     case FLOAT:
+	switch (size)
+	{
+	case DWORDS:
+	  {
+	    k = 0;
+	    for (i = 0; i < len; i += sizeof (F32))
+	      {
+		F32 temp_d;
+		
+		temp_d = get_float (&bin_buf[i]);
+		sprintf (&txt_buf[posn[k++]], MSG_106e, temp_d);
+	      }
+	  }
+	break;
+	case DOUBLES:
 	{
 	    /*
             *	The Intel floating point representation is;
@@ -500,6 +521,8 @@ bin_to_text (bin_buf, txt_buf, len, fmt_ptr)
 		temp_d = get_double (&bin_buf[i]);
 		sprintf (&txt_buf[posn[k++]], MSG_116e, temp_d);
 	    }
+	}
+	break;
 	}
 	break;
 #endif
@@ -673,11 +696,45 @@ get_long (w_buf)
 }
 
 #if	FLOAT_DISP
+
 /*
-*   Get an double from the buffer.
+*   Get a float from the buffer.
 *   Perform the Intel byte shuffle if necessary
 */
 
+F32
+get_float (w_buf)
+    uchar *w_buf;
+
+{
+    uchar temp_float[sizeof (F32)];
+    F32 *fp;
+    int i, siz;
+
+    fp = (F32 *) temp_float;
+    siz = sizeof (F32);
+
+    if (curwp->w_intel_mode)
+    {
+	for (i = 0; i <= siz-1; i++)
+	{
+	    temp_float[i] = 0xff & w_buf[i];
+	}
+    }
+    else
+    {
+	for (i = 0; i <= siz-1; i++)
+	{
+	    temp_float[(siz - 1) - i] = 0xff & w_buf[i];
+	}
+    }
+    return (*fp);
+}
+
+/*
+*   Get a double from the buffer.
+*   Perform the Intel byte shuffle if necessary
+*/
 D64
 get_double (w_buf)
     uchar *w_buf;
@@ -698,7 +755,7 @@ get_double (w_buf)
     }
     else
     {
-	for (i = 0; i <= 7; i++)
+	for (i = 0; i <= siz-1; i++)
 	{
 	    temp_doub[(siz - 1) - i] = 0xff & w_buf[i];
 	}
@@ -1246,6 +1303,7 @@ modeline (wp)
 
     if ((mode == HEX) ||
 	(mode == DECIMAL) ||
+	(mode == FLOAT) ||
 	(mode == OCTAL))
     {
 	switch (size)
@@ -1258,6 +1316,9 @@ modeline (wp)
 	    break;
 	case DWORDS:
 	    sprintf (posn_buf, MSG_siz_32);
+	    break;
+	case DOUBLES:
+	    sprintf (posn_buf, MSG_siz_64);
 	    break;
 #if RUNCHK
 	default:

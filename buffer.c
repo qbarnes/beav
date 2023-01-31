@@ -2,6 +2,8 @@
 *       Buffer handling.
 */
 
+#include    <string.h>
+#include    <stdlib.h>
 #include    "def.h"
 
 bool onebuf ();
@@ -166,7 +168,7 @@ killbuffer ()
 
     if ((s = ereply (MSG_kill_b, bufn, NBUFN, 0)) != TRUE)
 	return (s);
-    if (s = _killbuffer (bufn))
+    if ((s = _killbuffer (bufn)))
 	writ_echo (okmsg);	/* verbose-ness (jam) */
     return (s);
 }
@@ -805,7 +807,7 @@ pickone ()
     register LINE *lp;
     char name[NBUFN + 1];
     char buf[3];
-    WINDOW *wp;
+    //WINDOW *wp;
 
     lp = curwp->w_dotp;		/* get the buffer name from the line */
 

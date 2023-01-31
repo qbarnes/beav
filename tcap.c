@@ -2,7 +2,10 @@
 		for beav
 */
 
+#include <term.h>
+#include <stdlib.h>
 #include "def.h"
+#include "prototyp.h"
 
 #ifdef UNIX
 
@@ -83,7 +86,7 @@ tcapopen ()
 
     if ((tgetent (tcbuf, tv_stype)) != 1)
     {
-	sprintf (err_str, "Unknown terminal type %s!\r", tv_stype);
+	sprintf (err_str, "Unknown terminal type %s!\n", tv_stype);
 	puts (err_str);
 	ttclose ();		/* fix in 1.13 */
 	exit (1);
@@ -123,7 +126,7 @@ tcapopen ()
 	ttclose ();		/* fix in 1.13 */
 	exit (1);
     }
-    /* printf ("nrow %d, ncol %d\n", nrow, ncol); */
+    printf ("nrow %d, ncol %d\r", nrow, ncol);
 
     if ((ncol = (short) tgetnum ("co")) == -1)
     {

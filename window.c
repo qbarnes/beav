@@ -1,6 +1,7 @@
 /*
 *       Window handling.
 */
+#include    <stdlib.h>
 #include    "def.h"
 
 bool mvupwind ();
@@ -288,9 +289,9 @@ splitwind ()
     register WINDOW *wp;
     register int ntru;
     register int ntrl;
-    register int ntrd;
-    register WINDOW *wp1;
-    register WINDOW *wp2;
+    //register int ntrd;
+    //register WINDOW *wp1;
+    //register WINDOW *wp2;
     char buf[NCOL], buf1[NCOL];
 
     if (curwp->w_ntrows < MIN_WIN_ROWS)

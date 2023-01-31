@@ -4,6 +4,7 @@
 * search commands (both plain and incremental searches
 * are supported) and the query-replace command.
 */
+#include    <string.h>
 #include    "def.h"
 
 char replaceit ();
@@ -239,7 +240,7 @@ queryrepl (f, n, k)
     srch_mode = FALSE;
     rplc_mode = TRUE;
     cur_prompt = MSG_sch_str;
-    if (s = readpattern ())
+    if ((s = readpattern ()))
     {
 	replaceit ();
     }

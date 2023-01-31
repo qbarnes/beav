@@ -171,10 +171,29 @@ uchar decimal_s_32_posn[] =
 };
 ROW_FMT decimal_s_32_fmt =
 {
-    DECIMAL, DWORDS, 4, 16, 4, 4, 10, TRUE, decimal_l_str, decimal_l_str, decimal_str,
+    DECIMAL, DWORDS, 4, 16, 4, 4, 12, TRUE, decimal_l_str, decimal_l_str, decimal_str,
     decimal_s_32_posn, 0};
 
 #if	FLOAT_DISP
+uchar float_32_posn[] =
+{
+    FC, FC + 16, FC + 32, FC + 48
+};
+
+ROW_FMT float_32_fmt =
+{
+    FLOAT, DWORDS, 4, 16, 4, 4, 12, TRUE, float_str, decimal_l_str, decimal_str,
+    float_32_posn, 0};
+
+uchar float_s_32_posn[] =
+{
+    FS, FS + 17
+};
+ROW_FMT float_s_32_fmt =
+{
+    FLOAT, DWORDS, 4, 16, 4, 4, 14, TRUE, float_str, decimal_l_str, decimal_str,
+    float_s_32_posn, 0};
+
 uchar float_64_posn[] =
 {
     FC, FC + 32
@@ -338,6 +357,8 @@ init_fmt ()
     decimal_32_fmt.r_srch_fmt = &decimal_s_32_fmt;
     decimal_s_32_fmt.r_srch_fmt = &decimal_32_fmt;
 #if	FLOAT_DISP
+    float_32_fmt.r_srch_fmt = &float_s_32_fmt;
+    float_s_32_fmt.r_srch_fmt = &float_32_fmt;
     float_64_fmt.r_srch_fmt = &float_s_64_fmt;
     float_s_64_fmt.r_srch_fmt = &float_64_fmt;
 #endif

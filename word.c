@@ -23,7 +23,7 @@ char
 backunit (f, n, k)
     int f, n, k;
 {
-    char ret;
+    char ret = 0;
 
     if (n < 0)
 	return (forwunit (f, -n, KRANDOM));

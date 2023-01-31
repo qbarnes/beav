@@ -6,11 +6,13 @@
 * that they are all command processors.
 */
 
+#include    <string.h>
 #include    "def.h"
 
 char backdel ();
 bool fill_out ();
 void bad_key ();
+F32 get_float ();
 D64 get_double ();
 
 
@@ -24,6 +26,7 @@ extern char MSG_03u[];
 extern char MSG_05u[];
 extern char MSG_010lu[];
 extern char MSG_116e[];
+extern char MSG_106e[];
 extern char MSG_lnk[];
 extern char MSG_unlink[];
 extern char MSG_link[];
@@ -59,6 +62,7 @@ extern ROW_FMT decimal_8_fmt;
 extern ROW_FMT decimal_16_fmt;
 extern ROW_FMT decimal_32_fmt;
 #if	FLOAT_DISP
+extern ROW_FMT float_32_fmt;
 extern ROW_FMT float_64_fmt;
 #endif
 extern ROW_FMT hex_8_fmt;
@@ -138,7 +142,7 @@ twiddle ()
 
     register LINE *dotp;
     register short doto;
-    char b_per_u, f_buf[4], s_buf[4], i;
+    unsigned char b_per_u, f_buf[4], s_buf[4], i;
 
     dotp = curwp->w_dotp;
     doto = curwp->w_doto;
@@ -154,7 +158,7 @@ twiddle ()
     /* pick up first unit byte by byte */
     for (i = 0; i < b_per_u; i++)
     {
-	f_buf[i] = DOT_CHAR (curwp);
+	f_buf[(int)i] = DOT_CHAR (curwp);
 	move_ptr (curwp, 1L, TRUE, FALSE, TRUE);
     }
     /* move to the end of the second unit */
@@ -168,14 +172,14 @@ twiddle ()
     /* pick up second unit (reverse order) and deposit second unit */
     for (i = 0; i < b_per_u; i++)
     {
-	s_buf[i] = DOT_CHAR (curwp);
-	DOT_CHAR (curwp) = f_buf[b_per_u - 1 - i];
+	s_buf[(int)i] = DOT_CHAR (curwp);
+	DOT_CHAR (curwp) = f_buf[(int)b_per_u - 1 - i];
 	move_ptr (curwp, -1L, TRUE, FALSE, TRUE);
     }
     /* deposit first unit */
     for (i = 0; i < b_per_u; i++)
     {
-	DOT_CHAR (curwp) = s_buf[i];
+	DOT_CHAR (curwp) = s_buf[(int)i];
 	move_ptr (curwp, -1L, TRUE, FALSE, TRUE);
     }
     curwp->w_dotp = dotp;
@@ -567,7 +571,7 @@ selfinsert (f, n, k)
 	    /* get a text representation of the float */
 	    sprintf (text_buf, MSG_116e, d_val);
 	    /* insert the character that was typed */
-	    text_buf[u_offs] = c;
+	    text_buf[(int)u_offs] = c;
 	    /* see if scanf get get back a good number */
 
 	    /************************************************
@@ -601,7 +605,7 @@ selfinsert (f, n, k)
 
 		ptr = (D8 *) & d_val;
 		move_ptr (curwp, 1L, TRUE, FALSE, TRUE);	/* step forward one byte */
-		DOT_CHAR (curwp) = ptr[i] & 0xff;
+		DOT_CHAR (curwp) = ptr[(int)i] & 0xff;
 	    }
 
 	    /* restore dot position */
@@ -704,15 +708,15 @@ dec_chr_ok (char_buf, max_str, chr, pos)
     if ((chr < '0') || (chr > '9'))
 	return (FALSE);
 
-    char_buf[pos] = chr;	/* insert typed char */
+    char_buf[(int)pos] = chr;	/* insert typed char */
 
     /* check if number is too big */
-    for (i = 0; max_str[i] != 0; i++)
+    for (i = 0; max_str[(int)i] != 0; i++)
     {
-	if (char_buf[i] < max_str[i])
+	if (char_buf[(int)i] < max_str[(int)i])
 	    break;		/* if char is smaller then must be ok */
 
-	if (char_buf[i] > max_str[i])
+	if (char_buf[(int)i] > max_str[(int)i])
 	    return (FALSE);	/* val is too large; ERROR */
     }
     return (TRUE);
@@ -767,7 +771,15 @@ ebcdicmode ()
 bool
 floatmode ()
 {
+    switch (curwp->w_fmt_ptr->r_size)
+    {
+    case DWORDS:
+      curwp->w_fmt_ptr = &float_32_fmt;
+      break;
+    case DOUBLES:
     curwp->w_fmt_ptr = &float_64_fmt;
+      break;
+    }
     set_mode_vars ();
     return (TRUE);
 }
@@ -1146,6 +1158,43 @@ dispsize4 ()
 
     case BINARY:
 	curwp->w_fmt_ptr = &binary_32_fmt;
+	break;
+
+    case FLOAT:
+	curwp->w_fmt_ptr = &float_32_fmt;
+	break;
+
+    default:
+	return (TRUE);
+	break;
+    }
+
+    /* if we are in the middle of a search then use the proper format struc */
+    if (read_pat_mode)
+	curwp->w_fmt_ptr = curwp->w_fmt_ptr->r_srch_fmt;
+
+    move_ptr (curwp, 0L, TRUE, TRUE, TRUE);
+    wind_on_dot (curwp);
+    curwp->w_flag = WFHARD;
+    update ();
+    return (TRUE);
+}
+
+/*
+* Change the size of the display unit to double.
+* Adjust byte shift to the allowable range.
+* Normally bound to "META-8".
+*/
+bool
+dispsize8 ()
+{
+    curwp->w_disp_shift = 0;	/* shift to 0 when changing size */
+    curwp->w_unit_offset = 0;	/* go to end of unit */
+
+    switch ((uchar) (R_TYPE (curwp)))
+    {
+    case FLOAT:
+	curwp->w_fmt_ptr = &float_64_fmt;
 	break;
 
     default:

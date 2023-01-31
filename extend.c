@@ -1,6 +1,7 @@
 /*
 *   Extended (M-X) commands.
 */
+#include    <string.h>
 #include    "def.h"
 
 extern char MSG_not_now[];
@@ -25,10 +26,10 @@ extern char MSG_unk_rc[];
 
 char *flook ();
 
-static char *bindnm =
-{
-    0
-};				/* file name for customized key bindings */
+//static char *bindnm =
+//{
+//    0
+//};				/* file name for customized key bindings */
 #endif
 
 /*
@@ -240,7 +241,7 @@ wallchart (f, n, k)
 	    if ((sp->s_modify & SBOUND) == 0)	/* comment out default binding */
 		buf[0] = '#';
 	    cp2 = sp->s_name;	/* Add function name.   */
-	    while (*cp1++ = *cp2++)
+	    while ((*cp1++ = *cp2++))
 		;
 	    cp1--;
 	    while (cp1 < &buf[HKEY])	/* Goto column 32.  */
@@ -269,7 +270,7 @@ wallchart (f, n, k)
 		    *cp1++ = ' ';
 		buf[0] = '#';
 		cp2 = sp->s_name;	/* Add function name.   */
-		while (*cp1++ = *cp2++)
+		while ((*cp1++ = *cp2++))
 		    ;
 		cp1--;
 		while (cp1 < &buf[HENDCOL])
@@ -373,7 +374,7 @@ check_extend (sfname)
     if (fname == NULL)
 	return;
 
-    if (bindf = fopen (fname, "r"))
+    if ((bindf = fopen (fname, "r")))
     {
 	char buffr[80];
 	char *buffp;
@@ -409,7 +410,7 @@ check_extend (sfname)
 		}
 		else
 		{
-		    if (sp = symlookup (funcname))
+		    if ((sp = symlookup (funcname)))
 		    {
 			if (binding[keyval] != NULL)	/* Unbind old, and  */
 			    --binding[keyval]->s_nkey;
@@ -439,7 +440,7 @@ flook (fname, hflag)
     register char *home;	/* path to home directory */
     register char *path;	/* environmental PATH variable */
     register char *sp;		/* pointer into path spec */
-    register int i;		/* index */
+    //register int i;		/* index */
     static char fspec[NFILEN * 2];	/* full path spec to search */
     char *getenv ();
     FILE *bindf;
@@ -456,7 +457,7 @@ flook (fname, hflag)
 	    strcat (fspec, fname);
 
 	    /* and try it out */
-	    if (bindf = fopen (fspec, "r"))
+	    if ((bindf = fopen (fspec, "r")))
 	    {
 		fclose (bindf);
 		return (fspec);
@@ -465,7 +466,7 @@ flook (fname, hflag)
     }
 
     /* always try the current directory first */
-    if (bindf = fopen (fname, "r"))
+    if ((bindf = fopen (fname, "r")))
     {
 	fclose (bindf);
 	return (fname);
@@ -490,7 +491,7 @@ flook (fname, hflag)
 	    strcat (fspec, fname);
 
 	    /* and try it out */
-	    if (bindf = fopen (fspec, "r"))
+	    if ((bindf = fopen (fspec, "r")))
 	    {
 		fclose (bindf);
 		return (fspec);

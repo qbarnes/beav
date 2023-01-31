@@ -35,6 +35,7 @@
 *
 *     Mainline, macro commands.
 */
+#include        <stdlib.h>
 #include        "def.h"
 
 bool execute ();
@@ -98,7 +99,7 @@ int flush_count = 0;
 int flush_num = 500;
 int auto_update = 0;
 
-void
+int
 main (argc, argv)
     char *argv[];
     int argc;
@@ -109,7 +110,7 @@ main (argc, argv)
     register int n;
     register int mflag;
     char bname[NBUFN];
-    char initfile[NFILEN];
+    //char initfile[NFILEN];
 
 #if MSDOS
     is_wang ();			/* Check for computer type */
@@ -143,7 +144,7 @@ main (argc, argv)
     check_extend (NULL);	/* check for extended keys */
 #endif
 
-    if (argc == 1)
+    if (argc <= 1)
     {
 	edinit (bname);
 	eerase ();
@@ -181,6 +182,8 @@ main (argc, argv)
 
     save_buf_init ();		/* initialize save buffer */
     lastflag = 0;		/* Fake last flags.     */
+
+    writ_echo ("Welcome to BEAV. Esc-? for help, Ctrl-C to quit.");
 
   loop:
     update ();
@@ -389,6 +392,7 @@ quit (f, n, k)
     {
 
 	vttidy ();
+	printf("\n");
 	exit (GOOD);
     }
 
