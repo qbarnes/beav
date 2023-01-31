@@ -444,7 +444,7 @@ err_echo (buf)
     strcat (ch, MSG_hit_key);
     writ_echo (ch);
     ttbeep ();
-    while (ttgetc () != CTL_G);
+    while (ttgetc () != CTL_G)
     {
 	ttbeep ();
 	ttflush ();
